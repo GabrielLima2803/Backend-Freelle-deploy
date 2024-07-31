@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class Favorito(models.Model):
-    created_at = models.DateField(default=datetime.now)
+    date_favorite = models.DateField(default=datetime.now)
 
     def __str__(self):
         return f"Favorito - ${self.id}"

@@ -11,6 +11,6 @@ class FavoritoViewSet(ModelViewSet):
     serializer_class = FavoritoSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['created_at'] 
-    search_fields = ['created_at']  
-    ordering_fields = ['id', 'created_at']
+    filterset_fields = ['date_favorite'] 
+    search_fields = ['date_favorite']  
+    ordering_fields = ['id', 'date_favorite']
