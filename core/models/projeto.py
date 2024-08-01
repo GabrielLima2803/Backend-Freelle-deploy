@@ -18,8 +18,14 @@ class Projeto(models.Model):
     status = models.IntegerField(choices=StatusChoices.choices)
     preco = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     prazo_entrega = models.DateField()
-    proposta_recebida
-    orcamento
+    # proposta_recebida = models.CharField()
+    # orcamento = models.CharField()
     data_publicada = models.DateField(default=datetime.now)
     categoria = models.ManyToManyField(Categoria, related_name="projetos")
 
+    class Meta:
+        verbose_name = "Projeto"
+        verbose_name_plural = "Projetos"
+
+    def __str__(self):
+        return f"Projeto - ${self.titulo}"
