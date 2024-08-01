@@ -54,15 +54,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         CHINA = 8, "China"
         INDIA = 9, "Índia"
         AUSTRALIA = 10, "Austrália"
-    username = models.CharField(max_length=255, unique=True)
-    biografia = models.TextField()
+    username = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    biografia = models.TextField(null=True, blank=True)
     created_at = models.DateField(default=datetime.now)
-    nacionalidade = models.IntegerField(choices=NacionalidadeChoices.choices, default=NacionalidadeChoices.BR)
-    linguagem_principal = models.CharField(max_length=255)
-    especializacao = models.CharField(max_length=255)
+    nacionalidade = models.IntegerField(choices=NacionalidadeChoices.choices, null=True, blank=True)
+    linguagem_principal = models.CharField(max_length=255, null=True, blank=True)
+    especializacao = models.CharField(max_length=255, null=True, blank=True)
     avatar = models.ForeignKey(Image, related_name="+", on_delete=models.CASCADE, null=True, blank=True, default=None)
-    instagram = models.CharField(unique=True, null=True, blank=True)
-    linkedin = models.CharField(unique=True, null=True, blank=True)
+    instagram = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    linkedin = models.CharField(max_length=255, unique=True, null=True, blank=True)
     isPro = models.BooleanField(default=False)
     passage_id = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=255, unique=True)
