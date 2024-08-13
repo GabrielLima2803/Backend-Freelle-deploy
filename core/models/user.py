@@ -77,6 +77,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     comentario = models.ForeignKey(Comentario, related_name="users", on_delete=models.PROTECT, null=True, blank=True)
     favorito = models.ForeignKey(Favorito, related_name="users", on_delete=models.PROTECT, null=True, blank=True)
+    reset_code = models.CharField(max_length=6, null=True, blank=True)
 
     objects = UserManager()
 
