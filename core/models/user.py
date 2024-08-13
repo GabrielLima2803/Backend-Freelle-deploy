@@ -15,7 +15,9 @@ from uploader.models import Image
 from .comentario import Comentario
 from .favorito import Favorito
 
-
+def generate_unique_passage_id():
+    import uuid
+    return str(uuid.uuid4())
 
 class UserManager(BaseUserManager):
     """Manager for users."""
@@ -33,15 +35,17 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, email, password):
+    def create_superuser(self, email, password, username=None, **extra_fields):
         """Create, save and return a new superuser."""
-        user = self.create_user(email, password)
-        user.is_staff = True
-        user.is_superuser = True
-        user.save(using=self._db)
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
 
-        return user
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
 
+        return self.create_user(email, password, username=username, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
     """User model in the system."""
@@ -66,7 +70,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     instagram = models.CharField(max_length=255, unique=True, null=True, blank=True)
     linkedin = models.CharField(max_length=255, unique=True, null=True, blank=True)
     isPro = models.BooleanField(default=False)
-    passage_id = models.CharField(max_length=255, unique=True)
+    passage_id = models.CharField(max_length=255, unique=True, default=generate_unique_passage_id)
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
@@ -76,8 +80,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["email"]
+    EMAIL_FIELD = "email"
 
     class Meta:
         """Meta options for the model."""
