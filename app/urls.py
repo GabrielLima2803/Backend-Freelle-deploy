@@ -11,6 +11,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from core.views import UserViewSet, CategoriaViewSet, ComentarioViewSet, FavoritoViewSet, ProjetoViewSet, UserProjetoViewSet
 
+from core.auth import LoginUser, RegisterUser
+
 router = DefaultRouter()
 
 router.register(r"usuarios", UserViewSet, basename="usuarios")
@@ -39,4 +41,6 @@ urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     # API
     path("api/", include(router.urls)),
+    path("api/register/", RegisterUser, name="register"),
+    path("api/login/", LoginUser, name="login")
 ]
