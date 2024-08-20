@@ -11,7 +11,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from core.views import UserViewSet, CategoriaViewSet, ComentarioViewSet, FavoritoViewSet, ProjetoViewSet, UserProjetoViewSet
 
-from core.auth import LoginUser, RegisterUser, ForgotPasswordUser
+from core.auth import LoginUser, RegisterUser, ForgotPasswordUser, ResetPasswordUser
 
 router = DefaultRouter()
 
@@ -43,5 +43,6 @@ urlpatterns = [
     path("api/", include(router.urls)),
     path("api/register/", RegisterUser, name="register"),
     path("api/login/", LoginUser, name="login"),
-    path("api/forgot-password/", ForgotPasswordUser, name="forgot-password")
+    path("api/forgot-password/", ForgotPasswordUser, name="forgot-password"),
+    path("api/reset-password/", ResetPasswordUser, name="reset-password")
 ]
