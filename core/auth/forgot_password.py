@@ -5,6 +5,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 from django.utils.crypto import get_random_string
 from django.contrib.auth import get_user_model
+from django.template.loader import render_to_string
+
 
 User = get_user_model()
 
@@ -26,12 +28,19 @@ def ForgotPasswordUser(request):
     user.reset_code = reset_code
     user.save()
 
+    subject = 'Redefinição de senha'
+    from_email = 'gabriellima2803@gmail.com'
+    to_email = [user.email]
+
+    html_content = render_to_string('../templates/html-email/password_reset_email.html', {'reset_code': reset_code, 'user': user})
+
     send_mail(
-        'Redefinição de senha',
-        f'Seu código de redefinição de senha é: {reset_code}',
-        'gabriellima2803@gmail.com', 
-        [user.email],
+        subject,
+        '',
+        from_email,
+        to_email,
         fail_silently=False,
+        html_message=html_content,
     )
 
     return Response({"message": "Código de redefinição enviado por e-mail."}, status=status.HTTP_200_OK)
