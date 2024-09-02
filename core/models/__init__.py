@@ -4,3 +4,4 @@ from .comentario import Comentario
 from .favorito import Favorito
 from .projeto import Projeto
 from .projetoUser import UserProjeto
+from .nacionalidade import Nacionalidade
