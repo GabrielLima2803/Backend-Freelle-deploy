@@ -4,3 +4,4 @@ from .comentario import ComentarioSerializer
 from .favorito import FavoritoSerializer
 from .projeto import ProjetoSerializer
 from .projetoUser import UserProjetoSerializer
+from .nacionalidade import NacionalidadeSerializer
