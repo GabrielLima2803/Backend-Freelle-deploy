@@ -21,3 +21,12 @@ class UserProjetoViewSet(ModelViewSet):
         elif self.action == 'retrieve':
             return UserProjetoDetailSerializer
         return UserProjetoSerializer
+
+    # Usuario só vai ver seus projetos
+    def get_queryset(self):
+        usuario = self.request.user
+        if usuario.is_superuser:
+            return UserProjeto.objects.all()
+        if usuario.groups.filter(name="Administradores"):
+            return UserProjeto.objects.all()
+        return UserProjeto.objects.filter(usuario=usuario)
