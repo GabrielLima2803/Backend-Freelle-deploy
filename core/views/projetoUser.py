@@ -4,13 +4,20 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 
 from core.models import UserProjeto
-from core.serializers import UserProjetoSerializer
+from core.serializers import UserProjetoSerializer, ListUserProjetoSerializer, UserProjetoDetailSerializer
 
 class UserProjetoViewSet(ModelViewSet):
-    queryset = UserProjeto.objects.all().order_by("id")
+    queryset = UserProjeto.objects.all().order_by("id")  
     serializer_class = UserProjetoSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['projeto'] 
     search_fields = ['projeto']  
     ordering_fields = ['id', 'projeto']
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ListUserProjetoSerializer
+        elif self.action == 'retrieve':
+            return UserProjetoDetailSerializer
+        return UserProjetoSerializer
