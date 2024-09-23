@@ -12,3 +12,5 @@ class UserProjetoSerializer(ModelSerializer):
     class Meta:
         model = UserProjeto
         fields = "__all__"
+
+
