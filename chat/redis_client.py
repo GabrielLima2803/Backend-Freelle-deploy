@@ -1,13 +1,4 @@
 import redis
-import os
+from django.conf import settings
 
-REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
-REDIS_HOST_PORT = int(os.getenv('REDIS_PORT', 6379))
-REDIS_DB = int(os.getenv('REDIS_DB', 0))
-
-redis_client = redis.StrictRedis(
-    host=REDIS_HOST,
-    port=REDIS_HOST_PORT,
-    db=REDIS_DB,
-    decode_responses=True,
-)
+redis_instance = redis.StrictRedis.from_url(settings.REDIS_URL, decode_responses=True)
