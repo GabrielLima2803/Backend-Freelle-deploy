@@ -1,28 +1,51 @@
+import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-import json
-from .redis_client import redis_client
-from rest_framework.permissions import IsAuthenticated
+from .redis_client import redis_instance
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class SendMessageView(APIView):
-    permission_classes = [IsAuthenticated]
-
     def post(self, request):
-        user_id = request.data.get('user_id') 
-        message = request.data.get('message')
-
-        if not user_id or not message:
-            return Response({'detail': 'user_id e message são obrigatórios.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        data = {
-            'from_user_id': request.user.id,  
-            'to_user_id': user_id,
-            'message': message
+        """
+        {
+            "from_user_id": <int>,
+            "to_user_id": <int>,
+            "message": "<string>"
         }
-
+        """
+        data = request.data
+        required_fields = ['from_user_id', 'to_user_id', 'message']
+        if not all(field in data for field in required_fields):
+            return Response({"error": "Campos 'from_user_id', 'to_user_id' e 'message' são obrigatórios."}, status=status.HTTP_400_BAD_REQUEST)
+        
         try:
-            redis_client.publish('chat_messages', json.dumps(data))
-            return Response({'detail': 'Mensagem enviada com sucesso!'}, status=status.HTTP_200_OK)
+            from_user = User.objects.get(id=data['from_user_id'])
+            to_user = User.objects.get(id=data['to_user_id'])
+        except User.DoesNotExist:
+            return Response({"error": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        
+        message_data = {
+            "from_user_id": data['from_user_id'],
+            "to_user_id": data['to_user_id'],
+            "message": data['message']
+        }
+        
+        try:
+            redis_instance.publish('chat_messages', json.dumps(message_data))
+            return Response({
+                "status": "Mensagem enviada com sucesso.",
+                "from_user": {
+                    "id": from_user.id,
+                    "username": from_user.username
+                },
+                "to_user": {
+                    "id": to_user.id,
+                    "username": to_user.username
+                },
+                "message": data['message']
+                             }, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error": f"Erro ao publicar a mensagem: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
