@@ -9,6 +9,16 @@ from django.contrib.auth.models import (
 )
 from django.db import models
 
+from datetime import datetime
+
+from uploader.models import Image
+from .comentario import Comentario
+from .favorito import Favorito
+from .nacionalidade import Nacionalidade
+
+def generate_unique_passage_id():
+    import uuid
+    return str(uuid.uuid4())
 
 class UserManager(BaseUserManager):
     """Manager for users."""
@@ -26,29 +36,44 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, email, password):
+    def create_superuser(self, email, password, username=None, **extra_fields):
         """Create, save and return a new superuser."""
-        user = self.create_user(email, password)
-        user.is_staff = True
-        user.is_superuser = True
-        user.save(using=self._db)
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
 
-        return user
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
 
+        return self.create_user(email, password, username=username, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
     """User model in the system."""
-
-    passage_id = models.CharField(max_length=255, unique=True)
+    username = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    biografia = models.TextField(null=True, blank=True)
+    created_at = models.DateField(default=datetime.now)
+    nacionalidade = models.ForeignKey(Nacionalidade, related_name="users", on_delete=models.PROTECT, null=True, blank=True)
+    linguagem_principal = models.CharField(max_length=255, null=True, blank=True)
+    especializacao = models.CharField(max_length=255, null=True, blank=True)
+    foto = models.ForeignKey(Image, related_name="+", on_delete=models.SET_NULL, null=True, blank=True, default=None)
+    instagram = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    linkedin = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    isPro = models.BooleanField(default=False)
+    passage_id = models.CharField(max_length=255, unique=True, default=generate_unique_passage_id)
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    comentario = models.ForeignKey(Comentario, related_name="users", on_delete=models.PROTECT, null=True, blank=True)
+    favorito = models.ForeignKey(Favorito, related_name="users", on_delete=models.PROTECT, null=True, blank=True)
+    reset_code = models.CharField(max_length=6, null=True, blank=True)
 
     objects = UserManager()
 
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["email"]
+    EMAIL_FIELD = "email"
 
     class Meta:
         """Meta options for the model."""

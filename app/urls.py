@@ -9,11 +9,19 @@ from drf_spectacular.views import (
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from core.views import UserViewSet
+from core.views import UserViewSet, CategoriaViewSet, ComentarioViewSet, FavoritoViewSet, ProjetoViewSet, UserProjetoViewSet, NacionalidadeViewSet
+
+from core.auth import LoginUser, RegisterUser, ForgotPasswordUser, ResetPasswordUser
 
 router = DefaultRouter()
 
 router.register(r"usuarios", UserViewSet, basename="usuarios")
+router.register(r"categorias", CategoriaViewSet, basename="categorias")
+router.register(r"comentarios", ComentarioViewSet, basename="comentarios")
+router.register(r"favoritos", FavoritoViewSet, basename="favoritos")
+router.register(r"projetos", ProjetoViewSet, basename="projetos")
+router.register(r"user-projetos", UserProjetoViewSet, basename="user-projetos")
+router.register(r"nacionalidades", NacionalidadeViewSet, basename="nacionalidades")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -34,4 +42,8 @@ urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     # API
     path("api/", include(router.urls)),
+    path("api/register/", RegisterUser, name="register"),
+    path("api/login/", LoginUser, name="login"),
+    path("api/forgot-password/", ForgotPasswordUser, name="forgot-password"),
+    path("api/reset-password/", ResetPasswordUser, name="reset-password")
 ]
